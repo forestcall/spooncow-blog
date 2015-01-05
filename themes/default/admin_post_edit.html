@@ -1,0 +1,53 @@
+{% autoescape true %}
+<div class="col-12 main">
+  <h1 class="page-header">Edit Post</h1>
+  <form class="form-horizontal" action="/admin/post/edit" method="post">
+      <div class="form-group">
+        <label for="title" class="col-sm-2 control-label">Title</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="title" placeholder="Title" name="title" value="{{ title }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="slug" class="col-sm-2 control-label">Slug</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="slug" placeholder="my-domain-slug" name="slug" value="{{ slug }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="status" class="col-sm-2 control-label">Status</label>
+        <div class="col-sm-10">
+           <select class="form-control" name="status" id="status">
+              <option value="unpublished">Unpublished</option>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="post_type" class="col-sm-2 control-label">Post Type</label>
+        <div class="col-sm-10">
+           <select class="form-control" name="post_type" id="post_type">
+              <option value="post">Blog Post</option>
+              <option value="cartoon">Cartoon</option>
+              <option value="video">Video</option>
+            </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="body" class="col-sm-2 control-label">Post Body</label>
+        <div class="col-sm-10">
+           <textarea class="form-control" rows="3" name="body" id="body">{{ body }}</textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">Save Post</button>
+        </div>
+      </div>
+      <input type="hidden" value="{{ id }}" name="id">
+  </form>
+</div>
+{% endautoescape %}
+
+
