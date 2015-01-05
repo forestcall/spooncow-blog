@@ -1,5 +1,6 @@
 __author__ = 'daniel@spooncow.com (Daniel Chapman)'
 
-blog_name = 'My Blog'
-theme = 'default'
+site_name = 'SpoonCow'
+admin_theme = 'default'
+site_theme = 'spooner'
 post_path_format = '/%(year)d/%(month)02d/%(slug)s'

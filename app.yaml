@@ -12,8 +12,8 @@ handlers:
 - url: /admin.*
   script: admin.app
 
-- url: /static/([^/]+)/(.*)/(.*)
-  static_files: themes/\1/static/\2/\3
+- url: /static/([^/]+)/(.*)/(.*)/(.*)
+  static_files: themes/\1/\2/static/\3/\4
   upload: themes/[^/]+/static/.*
 
 - url: .*

@@ -109,8 +109,8 @@ class BaseHandler(webapp2.RequestHandler):
         # Set the default folder to '/themes/<theme>' instead of 'templates'
         jinja2.default_config['template_path'] = os.path.join(
             os.path.dirname(__file__),
-            'themes',
-            config.theme  # pull the templates from our configured theme
+            'themes/admin',
+            config.admin_theme  # pull the templates from our configured theme
         )
 
         # Returns a Jinja2 renderer cached in the app registry.
@@ -128,13 +128,13 @@ class BaseHandler(webapp2.RequestHandler):
         TODO - make this into a single page template + content
         """
         header = self.jinja2.render_template('admin_header.html', **context)
-        rv = self.jinja2.render_template(_template, **context)
+        body = self.jinja2.render_template(_template, **context)
         footer = self.jinja2.render_template('admin_footer.html', **context)
-        self.response.write(header+rv+footer)
+        self.response.write(header+body+footer)
 
 
 class MainAdminHandler(BaseHandler):
-    """ Display the default admin page - a list of recent posts
+    """ Display the admin dashboard - a list of recent posts, pages and other dashboard
     """
     def get(self, **kwargs):
         # TODO - make this into a dictionary of name:url for the template to cycle through
@@ -149,14 +149,17 @@ class MainAdminHandler(BaseHandler):
 
 
 class PostListAdminHandler(BaseHandler):
-    """ Display the default admin page - a list of recent posts
+    """ Display the post list page - a list of recent posts
     """
     def get(self, **kwargs):
-        self.response.write('Hello world Post List!')
-
+        posts = Post.get_posts()
+        template_values = {
+            'posts': posts
+        }
+        self.render_response('admin_post_list.html', **template_values)
 
 class PostAdminHandler(BaseHandler):
-    """ Display the default admin page - a list of recent posts
+    """ Create, Edit, Delete, or Preview posts
     """
     def get(self, task=None, post_slug=None, **kwargs):
         # self.response.write('<br/>'+webapp2.uri_for('admin-post-edit', _full=True, task=task, post_slug=post_slug))
@@ -263,7 +266,8 @@ class PostAdminHandler(BaseHandler):
                     'body': post.body,
                     'status': post.status,
                     'post_type': post.post_type,
-                    'id': post.key.id()
+                    'id': post.key.id(),
+                    'site_name': config.site_name
                 }
             else:
                 # TODO - throw a 404
@@ -273,18 +277,19 @@ class PostAdminHandler(BaseHandler):
 
     def delete(self):
         # this function should run on a http delete and also on a get task=delete
+        # it's hacky but it lets us use plain urls to delete inside the site instead of putting mini-forms everywhere
         self.response.write('Delete')
 
 
 class PageListAdminHandler(BaseHandler):
-    """ Display the default admin page - a list of recent posts
+    """ Display the page list page - a list of recent pages
     """
     def get(self, **kwargs):
         self.response.write('Hello world Page List!')
 
 
 class PageAdminHandler(BaseHandler):
-    """ Display the default admin page - a list of recent posts
+    """ Create, Edit, Delete, or Preview pages
     """
     def get(self, task=None, page_id=None, **kwargs):
         self.response.write('Hello world Page!')
@@ -299,11 +304,25 @@ class PageAdminHandler(BaseHandler):
             self.response.write('no page id')
 
 
-class PreferencesAdminHandler(BaseHandler):
-    """ Display the default admin page - a list of recent posts
+class ProfileAdminHandler(BaseHandler):
+    """
+    Change user specific settings
+    - Set display name
+    - Set avatar
+    - Set bio
+    - Set preferences etc.
     """
     def get(self, **kwargs):
-        self.response.write('Hello world Prefs!')
+        self.response.write('Hello world Profile!')
+
+
+class SettingsAdminHandler(BaseHandler):
+    """
+    Adjust site wide settings
+    - currently using config.py, but may change it to use Datastore OR defaults in config.py
+    """
+    def get(self, **kwargs):
+        self.response.write('Hello world Settings!')
 
 
 app = webapp2.WSGIApplication([
@@ -314,5 +333,6 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/admin/pages', handler=PageListAdminHandler, name='admin-pages-list'),
     webapp2.Route('/admin/page/<task:edit>', handler=PageAdminHandler, name='admin-page-edit-new'),  # for new pages
     webapp2.Route('/admin/page/<task:edit|delete|preview>/<page_slug>', handler=PageAdminHandler, name='admin-page-edit'),
-    webapp2.Route('/admin/preferences', handler=PreferencesAdminHandler, name='admin-preferences')
+    webapp2.Route('/admin/profile', handler=ProfileAdminHandler, name='admin-profile'),
+    webapp2.Route('/admin/settings', handler=SettingsAdminHandler, name='admin-settings')
 ], debug=True)
