@@ -16,89 +16,16 @@ import re
 # import json #to serialise our preferences
 from webapp2_extras import json  # use this one??
 from google.appengine.ext import ndb
-
+import models
 
 # json.dumps(pyDict)
 # json.loads(jsonStr)
+
 
 """
 Configure our template environment
 - set the directory to match the current theme set in our config.py
 """
-
-_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
-
-def slugify(text, delim=u'-'):
-    """utility to create and tidy up a url slug"""
-    result = []
-    for word in _punct_re.split(text.lower()):
-        word = normalize('NFKD', unicode(word)).encode('ascii', 'ignore')
-        if word:
-            result.append(word)
-    return unicode(delim.join(result))
-
-# I am declaring the user and post models here because this is where they will be used the most
-# TODO - is there a proper structure for these? e.g. a models directory or module file
-
-
-class Author(ndb.Model):
-    """
-    Model for Authors.
-
-    We aren't building for super high performance so we will keep authors and posts separate (i.e. normalized).
-
-    - Authors will contain a keyReference back to their posts.
-    """
-    user_id  = ndb.StringProperty()  # link to google account
-    name    = ndb.StringProperty()  # Author's display name
-    bio     = ndb.StringProperty()  # blurb for the bottom of pages
-    avatar  = ndb.BlobProperty()  # uploaded pic. TODO - pull direct from G+ profile if possible
-    prefs   = ndb.StringProperty()  # will have a json list of misc preference settings
-    posts   = ndb.KeyProperty(repeated=True)
-
-
-class Post(ndb.Model):
-    """
-    Model for blog posts
-
-    - status is a string and not an integer so custom post types can do their own thing if they need more statuses
-    - Posts will link back to their author
-    TODO - add category / tags in. another KeyProp list perhaps?
-    """
-    author      = ndb.KeyProperty()
-    title       = ndb.StringProperty(required=True)
-    slug        = ndb.StringProperty(required=True)
-    status      = ndb.StringProperty(required=True)
-    post_type   = ndb.StringProperty(required=True)
-    body        = ndb.TextProperty()
-    image       = ndb.BlobProperty()  # for comics, can get to image easily. also useful for header images for posts
-    attributes  = ndb.StringProperty()  # will be a json list of a python dictionary of misc settings
-    modified_on = ndb.DateTimeProperty(required=True, auto_now=True)
-    created_on  = ndb.DateTimeProperty(required=True, auto_now_add=True)
-    publish_up  = ndb.DateTimeProperty(required=True, auto_now_add=True)
-    publish_down = ndb.DateTimeProperty()
-
-    @classmethod
-    def get_by_slug(cls, slug):
-        q = cls.query(cls.slug == slug)
-        return q.get()
-
-    @classmethod
-    def get_posts(cls, status=None, limit=20):
-        if status:
-            q = cls.query(cls.status == status)
-        else:
-            q = cls.query()
-        q.order(-cls.publish_up)
-        return q.fetch(limit)
-
-    def _pre_put_hook(self):
-        # if we don't have a slug set create one from the title.
-        # if we do have a slug then clean it before saving
-        if not self.slug:
-            self.slug = slugify(self.title)
-        else:
-            self.slug = slugify(self.slug)
 
 
 class BaseHandler(webapp2.RequestHandler):
@@ -149,7 +76,7 @@ class PostListAdminHandler(BaseHandler):
     """ Display the post list page - a list of recent posts
     """
     def get(self, **kwargs):
-        posts = Post.get_posts()
+        posts = models.Post.get_posts()
         template_values = {
             'posts': posts
         }
@@ -178,29 +105,29 @@ class PostAdminHandler(BaseHandler):
         # if we have a slug, then clean it, if not then slugify the title to give us a slug
         # TODO - validate the title to make sure we have one
         if slug:
-            slug = slugify(slug)
+            slug = models.slugify(slug)
         else:
-            slug = slugify(title)
+            slug = models.slugify(title)
 
         if id:
             # not new Post get the old one
-            post = Post.get_by_id(id)
+            post = models.Post.get_by_id(id)
 
             """
             Check post to confirm that our slug is unique
             Do a search by slug. if we get no hits, or a hit with the same id
                 (i.e. the same object) then we are good to save
             """
-            chkpost = Post.get_by_slug(slug)
+            chkpost = models.Post.get_by_slug(slug)
             if chkpost and (chkpost.key.id() != id):
                 counter = 1
                 tmpslug = slug+str(counter)
-                chkpost = Post.get_by_slug(tmpslug)
+                chkpost = models.Post.get_by_slug(tmpslug)
                 # hope this works. loop through adding 1,2,3 etc to the end of the slug until we get a unique one
                 while chkpost and (chkpost.key.id() != id):
                     counter += 1
                     tmpslug = slug+str(counter)
-                    chkpost = Post.get_by_slug(tmpslug)
+                    chkpost = models.Post.get_by_slug(tmpslug)
 
                 slug = tmpslug
 
@@ -215,22 +142,22 @@ class PostAdminHandler(BaseHandler):
         else:
             # it is a new Post
             # check that the slug is unique
-            chkpost = Post.get_by_slug(slug)
+            chkpost = models.Post.get_by_slug(slug)
             if chkpost:
                 counter = 1
                 tmpslug = slug+str(counter)
-                chkpost = Post.get_by_slug(tmpslug)
+                chkpost = models.Post.get_by_slug(tmpslug)
                 # hope this works. loop through adding 1,2,3 etc to the end of the slug until we get a unique one
                 # unique = no match
                 while chkpost:
                     counter += 1
                     tmpslug = slug+str(counter)
-                    chkpost = Post.get_by_slug(tmpslug)
+                    chkpost = models.Post.get_by_slug(tmpslug)
 
                 slug = tmpslug
             # save the new post.
             # TODO - this whole section isn't particularly DRY, it will need a refactor at some point
-            post = Post()
+            post = models.Post()
             post.title = title
             post.slug = slug
             post.body = body
@@ -247,7 +174,7 @@ class PostAdminHandler(BaseHandler):
         template_values = {}
         # get our post and prep the template vars if we were passed a post_slug
         if post_slug:
-            post = Post.get_by_slug(post_slug)
+            post = models.Post.get_by_slug(post_slug)
 
             if post:
                 """
