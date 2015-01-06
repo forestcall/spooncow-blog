@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% autoescape true %}
-<html lang="en">
+<html lang="en" ng-app="spooncowApp" ng-controller="DocsCtrl">
 <head>
     {% block meta %}
     <meta charset="UTF-8">
@@ -12,16 +12,11 @@
     <title>{% block title %}{{ header_title }}{% endblock title %}</title>
     {% block head %}
     <link rel="shortcut icon" href="/favicon.ico">
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-    <!-- Custom styles for this template -->
-    <link href="/static/admin/default/css/dashboard.css" rel="stylesheet">
+    <!-- Angulars Material CSS now available via Google CDN; version 0.6 used here -->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.6.1/angular-material.min.css">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <!-- Custom styles for this template -->
+    <link href="/static/admin/default/css/default-theme.css" rel="stylesheet">
 
     {% endblock head %}
 </head>
@@ -50,6 +45,10 @@
     </div>
   </div>
 </nav>
+
+    {% raw %}
+    Nothing here {{'yet' + '!'}}
+{% endraw %}
 {% endblock nav %}
 <div class="container-fluid">
       <div class="row">
@@ -57,13 +56,15 @@
       </div>
 </div>
     {% block footerjs %}
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript" src=""></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="/themes/admin/default/static/js/ie10-viewport-bug-workaround.js"></script>
+    <!-- Angular Material Dependencies -->
+    <script src="//cdn.jsdelivr.net/hammerjs/2.0.4/hammer.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular-aria.min.js"></script>
+
+    <!-- Angular Material Javascript now available via Google CDN; version 0.6 used here -->
+    <script src="//ajax.googleapis.com/ajax/libs/angular_material/0.6.1/angular-material.min.js"></script>
+    <script src="/static/admin/default/js/app.js"></script>
     {% endblock footerjs %}
     {% block footer %}{% endblock footer %}
 </body>

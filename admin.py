@@ -139,9 +139,8 @@ class MainAdminHandler(BaseHandler):
         template_values = {
             "new_post_url" : webapp2.uri_for('admin-post-edit-new', _full=True, task='edit'),
             "post_list_url": webapp2.uri_for('admin-posts-list', _full=True),
-            "new_page_url": webapp2.uri_for('admin-page-edit-new', _full=True, task='edit'),
-            "page_list_url": webapp2.uri_for('admin-pages-list', _full=True),
-            "preferences_url": webapp2.uri_for('admin-preferences', _full=True)
+            "profile_url": webapp2.uri_for('admin-profile', _full=True),
+            "settings_url": webapp2.uri_for('admin-settings', _full=True)
         }
         self.render_response('dashboard.html', **template_values)
 
@@ -279,29 +278,6 @@ class PostAdminHandler(BaseHandler):
         self.response.write('Delete')
 
 
-class PageListAdminHandler(BaseHandler):
-    """ Display the page list page - a list of recent pages
-    """
-    def get(self, **kwargs):
-        self.response.write('Hello world Page List!')
-
-
-class PageAdminHandler(BaseHandler):
-    """ Create, Edit, Delete, or Preview pages
-    """
-    def get(self, task=None, page_id=None, **kwargs):
-        self.response.write('Hello world Page!')
-        if task:
-            self.response.write('task: '+task)
-        else:
-            self.response.write('no task')
-
-        if page_id:
-            self.response.write(page_id)
-        else:
-            self.response.write('no page id')
-
-
 class ProfileAdminHandler(BaseHandler):
     """
     Change user specific settings
@@ -320,17 +296,20 @@ class SettingsAdminHandler(BaseHandler):
     - currently using config.py, but may change it to use Datastore OR defaults in config.py
     """
     def get(self, **kwargs):
-        self.response.write('Hello world Settings!')
+        self.response.headers['Content-Type'] = 'application/json'
+        obj = {
+            'success': 'some var',
+            'payload': 'some var',
+        }
+        self.response.out.write(json.encode(obj))
 
 
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/admin', handler=MainAdminHandler, name='admin-home'),
+    webapp2.Route(r'/admin/', handler=MainAdminHandler, name='admin-home'),
     webapp2.Route(r'/admin/posts', handler=PostListAdminHandler, name='admin-posts-list'),
     webapp2.Route('/admin/post/<task:edit>', handler=PostAdminHandler, name='admin-post-edit-new'),  # for new posts
     webapp2.Route('/admin/post/<task:edit|delete|preview>/<post_slug>', handler=PostAdminHandler, name='admin-post-edit'),
-    webapp2.Route('/admin/pages', handler=PageListAdminHandler, name='admin-pages-list'),
-    webapp2.Route('/admin/page/<task:edit>', handler=PageAdminHandler, name='admin-page-edit-new'),  # for new pages
-    webapp2.Route('/admin/page/<task:edit|delete|preview>/<page_slug>', handler=PageAdminHandler, name='admin-page-edit'),
     webapp2.Route('/admin/profile', handler=ProfileAdminHandler, name='admin-profile'),
     webapp2.Route('/admin/settings', handler=SettingsAdminHandler, name='admin-settings')
 ], debug=True)

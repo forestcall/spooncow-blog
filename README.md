@@ -3,18 +3,29 @@ SpoonCow Blog for Google App Engine
 
 A basic blog that will end up hosted on GAE on http://spooncow.com.
 
-I and some associates are using this primarily as a way of learning Python and GAE.
+I and some associates are using this primarily as a way of learning Python, GAE and some other snappy tech.
+
+Basic Design Philosophy:
+
+Split system of Site and Admin
+- Site is optimised for reads with heavy caching and Jinja Templates
+- Admin is optimised for usability and writes/edits with Angular + Material Design
+
+Single Model For Content
+- different types of pages use different "content_type"s
+- content type management is shifted out of the core project as much as possible to templates and self contained modules
+- available content types are listed in config.py
 
 We are focusing initially on three post types:
 
 - regular blog posts : sequentially ordered, no wysiwyg just enter your own HTML
 - pages : fixed pages such as about, home, faq etc.
-- cartoon posts : consists of an image and associated text
-- video posts : a link to a hosted video (may add self hosting via blobstore later)
+- image posts : consists of an image and associated text
 
 Possible future post types:
 
-- gallery
+- video posts : a link to a hosted video (may add self hosting via blobstore later)
+- gallery - links a bunch of images together
 - custom code
 - testimonials
 
@@ -37,6 +48,7 @@ Feature plans:
 - Tagging posts
 - Multiple Authors
 - mailing list integration (mailchimp etc)
+- build system to automatically add post types
 
 One day features:
 
