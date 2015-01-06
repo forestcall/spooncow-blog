@@ -67,7 +67,8 @@ class MainHandler(BaseHandler):
             "new_post_url" : webapp2.uri_for('admin-post-edit-new', _full=True, task='edit'),
             "post_list_url": webapp2.uri_for('admin-posts-list', _full=True),
             "profile_url": webapp2.uri_for('admin-profile', _full=True),
-            "settings_url": webapp2.uri_for('admin-settings', _full=True)
+            "settings_url": webapp2.uri_for('admin-settings', _full=True),
+            "site_name": config.site_name
         }
         self.render_response('dashboard.html', **template_values)
 

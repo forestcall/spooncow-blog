@@ -1,16 +1,5 @@
 {% extends "/base.html" %}
 {% block body %}
-{% autoescape true %}
-<div class="col-sm-3 col-md-2 sidebar">
-  <ul class="nav nav-sidebar">
-    <li class="active"><a href="/admin/">Dashboard <span class="sr-only">(current)</span></a></li>
-    <li><a href="{{ new_post_url }}">Write New Post</a></li>
-    <li><a href="{{ post_list_url }}">View Posts</a></li>
-    <li><a href="{{ new_page_url }}">Write New Page</a></li>
-    <li><a href="{{ page_list_url}}">View Pages</a></li>
-    <li><a href="{{ preferences_url }}">Edit Preferences</a></li>
-  </ul>
-</div>
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
   <h1 class="page-header">Welcome to the SpoonCow Blog Admin</h1>
   <h2 class="sub-header">Posts</h2>
@@ -145,5 +134,4 @@
 
 
 
-{% endautoescape %}
 {% endblock body %}
