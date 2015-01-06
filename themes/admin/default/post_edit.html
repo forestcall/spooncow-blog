@@ -1,4 +1,12 @@
 {% extends "base.html" %}
+{% from "macros.html" import nav_link with context %}
+{% block nav %}
+    <ul class="nav navbar-nav">
+  {{ nav_link('home', 'Home') }}
+  {{ nav_link('about', 'About') }}
+  {{ nav_link('contact', 'Contact Us') }}
+</ul>
+{% endblock %}
 {% autoescape true %}
 <div class="col-12 main">
   <h1 class="page-header">Edit Post</h1>
