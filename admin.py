@@ -8,15 +8,15 @@ Admin Actions:
     - edit their profile (bio, blurb, display name, etc.) TODO - link to G+ profile
 """
 import os
-from webapp2_extras import jinja2
-from unicodedata import normalize  # for slugify
 import webapp2
-import config
-import re
+
 # import json #to serialise our preferences
 from webapp2_extras import json  # use this one??
-from google.appengine.ext import ndb
-import models
+from webapp2_extras import jinja2
+
+import config
+from models import Post, Author
+from utils import slugify
 
 # json.dumps(pyDict)
 # json.loads(jsonStr)
@@ -76,7 +76,7 @@ class PostListAdminHandler(BaseHandler):
     """ Display the post list page - a list of recent posts
     """
     def get(self, **kwargs):
-        posts = models.Post.get_posts()
+        posts = Post.get_posts()
         template_values = {
             'posts': posts
         }
@@ -105,29 +105,29 @@ class PostAdminHandler(BaseHandler):
         # if we have a slug, then clean it, if not then slugify the title to give us a slug
         # TODO - validate the title to make sure we have one
         if slug:
-            slug = models.slugify(slug)
+            slug = slugify(slug)
         else:
-            slug = models.slugify(title)
+            slug = slugify(title)
 
         if id:
             # not new Post get the old one
-            post = models.Post.get_by_id(id)
+            post = Post.get_by_id(id)
 
             """
             Check post to confirm that our slug is unique
             Do a search by slug. if we get no hits, or a hit with the same id
                 (i.e. the same object) then we are good to save
             """
-            chkpost = models.Post.get_by_slug(slug)
+            chkpost = Post.get_by_slug(slug)
             if chkpost and (chkpost.key.id() != id):
                 counter = 1
                 tmpslug = slug+str(counter)
-                chkpost = models.Post.get_by_slug(tmpslug)
+                chkpost = Post.get_by_slug(tmpslug)
                 # hope this works. loop through adding 1,2,3 etc to the end of the slug until we get a unique one
                 while chkpost and (chkpost.key.id() != id):
                     counter += 1
                     tmpslug = slug+str(counter)
-                    chkpost = models.Post.get_by_slug(tmpslug)
+                    chkpost = Post.get_by_slug(tmpslug)
 
                 slug = tmpslug
 
@@ -142,22 +142,22 @@ class PostAdminHandler(BaseHandler):
         else:
             # it is a new Post
             # check that the slug is unique
-            chkpost = models.Post.get_by_slug(slug)
+            chkpost = Post.get_by_slug(slug)
             if chkpost:
                 counter = 1
                 tmpslug = slug+str(counter)
-                chkpost = models.Post.get_by_slug(tmpslug)
+                chkpost = Post.get_by_slug(tmpslug)
                 # hope this works. loop through adding 1,2,3 etc to the end of the slug until we get a unique one
                 # unique = no match
                 while chkpost:
                     counter += 1
                     tmpslug = slug+str(counter)
-                    chkpost = models.Post.get_by_slug(tmpslug)
+                    chkpost = Post.get_by_slug(tmpslug)
 
                 slug = tmpslug
             # save the new post.
             # TODO - this whole section isn't particularly DRY, it will need a refactor at some point
-            post = models.Post()
+            post = Post()
             post.title = title
             post.slug = slug
             post.body = body
@@ -174,7 +174,7 @@ class PostAdminHandler(BaseHandler):
         template_values = {}
         # get our post and prep the template vars if we were passed a post_slug
         if post_slug:
-            post = models.Post.get_by_slug(post_slug)
+            post = Post.get_by_slug(post_slug)
 
             if post:
                 """
