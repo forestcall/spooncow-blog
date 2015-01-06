@@ -58,7 +58,7 @@ class BaseHandler(webapp2.RequestHandler):
         self.response.write(resp_body)
 
 
-class MainAdminHandler(BaseHandler):
+class MainHandler(BaseHandler):
     """ Display the admin dashboard - a list of recent posts, pages and other dashboard
     """
     def get(self, **kwargs):
@@ -72,7 +72,7 @@ class MainAdminHandler(BaseHandler):
         self.render_response('dashboard.html', **template_values)
 
 
-class PostListAdminHandler(BaseHandler):
+class PostListHandler(BaseHandler):
     """ Display the post list page - a list of recent posts
     """
     def get(self, **kwargs):
@@ -82,7 +82,7 @@ class PostListAdminHandler(BaseHandler):
         }
         self.render_response('post_list.html', **template_values)
 
-class PostAdminHandler(BaseHandler):
+class PostHandler(BaseHandler):
     """ Create, Edit, Delete, or Preview posts
     """
     def get(self, task=None, post_slug=None, **kwargs):
@@ -205,7 +205,7 @@ class PostAdminHandler(BaseHandler):
         self.response.write('Delete')
 
 
-class ProfileAdminHandler(BaseHandler):
+class ProfileHandler(BaseHandler):
     """
     Change user specific settings
     - Set display name
@@ -217,7 +217,7 @@ class ProfileAdminHandler(BaseHandler):
         self.response.write('Hello world Profile!')
 
 
-class SettingsAdminHandler(BaseHandler):
+class SettingsHandler(BaseHandler):
     """
     Adjust site wide settings
     - currently using config.py, but may change it to use Datastore OR defaults in config.py
@@ -232,11 +232,11 @@ class SettingsAdminHandler(BaseHandler):
 
 
 app = webapp2.WSGIApplication([
-    webapp2.Route(r'/admin', handler=MainAdminHandler, name='admin-home'),
-    webapp2.Route(r'/admin/', handler=MainAdminHandler, name='admin-home'),
-    webapp2.Route(r'/admin/posts', handler=PostListAdminHandler, name='admin-posts-list'),
-    webapp2.Route('/admin/post/<task:edit>', handler=PostAdminHandler, name='admin-post-edit-new'),  # for new posts
-    webapp2.Route('/admin/post/<task:edit|delete|preview>/<post_slug>', handler=PostAdminHandler, name='admin-post-edit'),
-    webapp2.Route('/admin/profile', handler=ProfileAdminHandler, name='admin-profile'),
-    webapp2.Route('/admin/settings', handler=SettingsAdminHandler, name='admin-settings')
+    webapp2.Route(r'/admin', handler=MainHandler, name='admin-home'),
+    webapp2.Route(r'/admin/', handler=MainHandler, name='admin-home'),
+    webapp2.Route(r'/admin/posts', handler=PostListHandler, name='admin-posts-list'),
+    webapp2.Route('/admin/post/<task:edit>', handler=PostHandler, name='admin-post-edit-new'),  # for new posts
+    webapp2.Route('/admin/post/<task:edit|delete|preview>/<post_slug>', handler=PostHandler, name='admin-post-edit'),
+    webapp2.Route('/admin/profile', handler=ProfileHandler, name='admin-profile'),
+    webapp2.Route('/admin/settings', handler=SettingsHandler, name='admin-settings')
 ], debug=True)
