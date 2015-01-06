@@ -42,3 +42,7 @@ One day features:
 
 - sales funnels
 - A/B content and heading testing
+
+Admin and post writing is enforced by google accounts. The admin panel is restricted only to side admins.
+
+We may implement more granular acl in the future but this works for us for now.

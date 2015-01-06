@@ -127,10 +127,8 @@ class BaseHandler(webapp2.RequestHandler):
          This isn't the best way to it, but it will do for now
         TODO - make this into a single page template + content
         """
-        header = self.jinja2.render_template('admin_header.html', **context)
-        body = self.jinja2.render_template(_template, **context)
-        footer = self.jinja2.render_template('admin_footer.html', **context)
-        self.response.write(header+body+footer)
+        resp_body = self.jinja2.render_template(_template, **context)
+        self.response.write(resp_body)
 
 
 class MainAdminHandler(BaseHandler):
@@ -145,7 +143,7 @@ class MainAdminHandler(BaseHandler):
             "page_list_url": webapp2.uri_for('admin-pages-list', _full=True),
             "preferences_url": webapp2.uri_for('admin-preferences', _full=True)
         }
-        self.render_response('admin_main.html', **template_values)
+        self.render_response('dashboard.html', **template_values)
 
 
 class PostListAdminHandler(BaseHandler):
@@ -156,7 +154,7 @@ class PostListAdminHandler(BaseHandler):
         template_values = {
             'posts': posts
         }
-        self.render_response('admin_post_list.html', **template_values)
+        self.render_response('post_list.html', **template_values)
 
 class PostAdminHandler(BaseHandler):
     """ Create, Edit, Delete, or Preview posts
@@ -273,7 +271,7 @@ class PostAdminHandler(BaseHandler):
                 # TODO - throw a 404
                 self.response.write('No matching slug! 404')
 
-        self.render_response('admin_post_edit.html', **template_values)
+        self.render_response('post_edit.html', **template_values)
 
     def delete(self):
         # this function should run on a http delete and also on a get task=delete

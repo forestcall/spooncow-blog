@@ -2,12 +2,15 @@
 {% autoescape true %}
 <html lang="en">
 <head>
+    {% block meta %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>{{ header_title }}</title>
+    {% endblock meta %}
+    <title>{% block title %}{{ header_title }}{% endblock title %}</title>
+    {% block head %}
     <link rel="shortcut icon" href="/favicon.ico">
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
@@ -19,8 +22,11 @@
       <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    {% endblock head %}
 </head>
 <body>
+{% block nav %}
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -44,6 +50,22 @@
     </div>
   </div>
 </nav>
+{% endblock nav %}
 <div class="container-fluid">
       <div class="row">
+          {% block body %}{% endblock body %}
+      </div>
+</div>
+    {% block footerjs %}
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript" src=""></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/themes/admin/default/static/js/ie10-viewport-bug-workaround.js"></script>
+    {% endblock footerjs %}
+    {% block footer %}{% endblock footer %}
+</body>
+</html>
 {% endautoescape %}
